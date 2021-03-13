@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">lab_7</string>
+    <string name="group_and_student_name">8В7А Штоль</string>
+    <string name="coord_lat_and_lon">Широта: %1%4f; Долгота %2%4f</string>
+</resources>
