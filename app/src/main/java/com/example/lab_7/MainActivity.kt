@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private var locationManager: LocationManager? = null
     private val  CHANNEL_ID = "first_channel"
     private val notificationId = 101
+    private val trackingRadiusMeters = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -161,7 +162,7 @@ class MainActivity : AppCompatActivity() {
         while (!cursor.isAfterLast) {
             var lon = cursor.getDouble(2)
             var lat = cursor.getDouble(3)
-            if (distanceInMBetweenEarthCoordinates(userLon, userLat, lon, lat) < 100)
+            if (distanceInMBetweenEarthCoordinates(userLon, userLat, lon, lat) < trackingRadiusMeters)
                 sendNotification(cursor.getString(1))
             cursor.moveToNext()
         }
