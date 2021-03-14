@@ -31,7 +31,6 @@ class CoordAdapter(context: Context, coords: ArrayList<Coordinate>):
         var v = view?.findViewById(R.id.coord_name) as TextView
         v.text = s.name
         v = view.findViewById(R.id.coord_lat_and_lon) as TextView
-        val resText = ctx.resources.getString(R.string.coord_lat_and_lon)
         v.text = "Широта: ${s.lat.format(6)}; Долгота ${s.lon.format(6)}"
         return view
     }

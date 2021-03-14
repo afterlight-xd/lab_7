@@ -36,6 +36,8 @@ private lateinit var con: SQLiteDatabase;
 class MainActivity : AppCompatActivity() {
 
     private val MY_PERMISSIONS_REQUEST_LOCATION = 1
+    private var PERMISSION_ASKED = false
+    private var TOAST_SHOWN = false
     private val RESULT_DELETE = 15
     private var locationManager: LocationManager? = null
     private val  CHANNEL_ID = "first_channel"
@@ -65,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         getCoords()
 
         createNotificationChannel()
-        sendNotification("test")
     }
 
     private fun createNotificationChannel(){
@@ -138,7 +139,8 @@ class MainActivity : AppCompatActivity() {
                         Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED) {
             // Здесь код работы с разрешениями...
-            checkPermissions()
+            if (!PERMISSION_ASKED)
+                checkPermissions()
         }
         else {
             locationManager!!.requestLocationUpdates(
@@ -148,11 +150,6 @@ class MainActivity : AppCompatActivity() {
             showInfo()
             if (location != null)
                 checkCoords(location.longitude, location.latitude)
-            /*val toast = Toast.makeText(this,
-                    "Нажата кнопка ${ it.tag }",
-                    Toast.LENGTH_SHORT)
-            toast.show();*/
-
         }
     }
 
@@ -251,17 +248,24 @@ class MainActivity : AppCompatActivity() {
                                             grantResults: IntArray) {
         if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {
             // Разрешение есть, заново выполняем требуемое действие
+            startTracking()
         }
         else {
             // Разрешения нет...
+            stopTracking()
         }
     }
 
     fun buttonOpenSettings(view: View) {
-        checkPermissions()
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    MY_PERMISSIONS_REQUEST_LOCATION)
     }
 
-    fun checkPermissions() {
+    private fun checkPermissions() {
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -269,16 +273,23 @@ class MainActivity : AppCompatActivity() {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // Показываем пояснения
+                if (!TOAST_SHOWN) {
+                    val toast = Toast.makeText(this,
+                            "Нужно дать доступ к геолокации",
+                            Toast.LENGTH_SHORT)
+                    toast.show()
+                    TOAST_SHOWN = true
+                }
             }
-
-            // Затем запрашиваем разрешение
+            else
+            // Запрашиваем разрешение
             ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     MY_PERMISSIONS_REQUEST_LOCATION)
         }
-        else {
+        /*else {
             // Разрешение есть, выполняем требуемое действие
-        }
+        }*/
     }
 
     private fun getCoords() {
